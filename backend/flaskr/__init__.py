@@ -47,12 +47,15 @@ def create_app(test_config=None):
     @app.route('/categories')
     def get_categories():
         categories = Category.query.all()
-        formatted_categories = [category.format() for category in categories]
+
+        formatted_categories = {}
+        for category in categories:
+            formatted_categories[category.id] = category.type
 
         return jsonify({
             "success": True,
             "categories": formatted_categories,
-            "total_books": len(formatted_categories)
+            "total_categories": len(categories)
         })
 
     '''
