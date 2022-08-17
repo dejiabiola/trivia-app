@@ -35,8 +35,8 @@ class TriviaTestCase(unittest.TestCase):
     Write at least one test for each test for successful operation and for expected errors.
     """
 
-    def test_get_category(self):
-        """Tes that the get category function works successfully"""
+    def test_get_categories(self):
+        """Test that the get category function works successfully"""
         response = self.client().get('/categories')
         data = json.loads(response.data)
 
@@ -44,6 +44,33 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(isinstance(data["categories"], dict))
         self.assertTrue(data["total_categories"])
         self.assertEqual(data["success"], True)
+
+    def test_404_get_categories_empty(self):
+        """Test that the get_categories method returns 404 when no categories are defined"""
+        pass
+
+    def test_get_paginated_questions(self):
+        """Test that endpoint to get questions in pagination works correctly"""
+        response = self.client().get('/questions')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["questions"])
+        self.assertTrue(isinstance(data["questions"], list))
+        self.assertTrue(data["total_questions"])
+        self.assertTrue(data["categories"])
+        self.assertTrue(isinstance(data["categories"], dict))
+        self.assertEqual(data["current_category"], "")
+
+    def test_404_get_questions_beyond_valid_page(self):
+        """Test that endpoint sends 404 if request for questions is not valid"""
+        response = self.client().get('/questions?page=10000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found")
 
 
 # Make the tests conveniently executable
