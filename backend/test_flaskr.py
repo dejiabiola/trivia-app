@@ -105,13 +105,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["current_category"])
 
     def test_404_invalid_get_question_by_category(self):
-        """Test that endpoint returns formatted error message if question by category is invalid"""
+        """Test that endpoint returns formatted error message if question by category id is invalid"""
         response = self.client().get('/categories/1000/questions')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "resource not found")
+        self.assertEqual(data["message"], "unprocessable entity")
 
 
 # Make the tests conveniently executable
