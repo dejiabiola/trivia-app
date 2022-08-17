@@ -93,6 +93,31 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "unprocessable entity")
 
+    def test_search_question(self):
+        """Test that endpoint to search a question works correctly"""
+        response = self.client().post(
+            '/questions', json={"searchTerm": "largest"})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["questions"])
+        self.assertTrue(isinstance(data["questions"], list))
+        self.assertTrue(data["total_questions"])
+
+    def test_search_question_with_unknown_value(self):
+        """Test that endpoint to search a question works correctly if value is unknown"""
+        response = self.client().post(
+            '/questions', json={"searchTerm": "sakdhfkasdflkhsdfasf"})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertFalse(data["questions"])
+        self.assertTrue(isinstance(data["questions"], list))
+        self.assertEqual(data["total_questions"], 0)
+        self.assertEqual(data["total_questions"], 0)
+
     def test_get_question_by_category(self):
         """Test that endpoint to get a question by category works correctly"""
         response = self.client().get('/categories/1/questions')
