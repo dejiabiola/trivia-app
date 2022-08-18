@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -61,6 +61,23 @@ def create_app(test_config=None):
             "categories": formatted_categories,
             "total_categories": len(categories)
         })
+
+    @app.route('/categories', methods=["POST"])
+    def create_category():
+        try:
+            body = request.get_json()
+
+            category_type = body.get('type', None)
+            category = Category(type=category_type)
+
+            category.insert()
+
+            return jsonify({
+                "success": True,
+                "category": category.format()
+            })
+        except:
+            abort(422)
 
     '''
   @TODO: 
