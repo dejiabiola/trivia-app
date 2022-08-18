@@ -37,3 +37,9 @@ form {
   width: 80%;
   margin: auto;
 }
+
+.category-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
