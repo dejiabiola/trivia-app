@@ -11,7 +11,8 @@ class FormView extends Component {
       answer: "",
       difficulty: 1,
       category: 1,
-      categories: {}
+      categories: {},
+      type: ""
     }
   }
 
@@ -55,6 +56,30 @@ class FormView extends Component {
     })
   }
 
+  submitCategory = (event) => {
+    event.preventDefault();
+    $.ajax({
+      url: '/categories',
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        type: this.state.type,
+      }),
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true,
+      success: (result) => {
+        document.getElementById("add-category-form").reset();
+        this.props.history.push('/')
+      },
+      error: (error) => {
+        alert('Unable to add category. Please try your request again')
+      }
+    })
+  }
+
   handleChange = (event) => {
     this.setState({[event.target.name]: event.target.value})
   }
@@ -65,15 +90,15 @@ class FormView extends Component {
         <h2>Add a New Trivia Question</h2>
         <form className="form-view" id="add-question-form" onSubmit={this.submitQuestion}>
           <label>
-            Question
+            Question:{' '}
             <input type="text" name="question" onChange={this.handleChange}/>
           </label>
           <label>
-            Answer
+            Answer:{' '}
             <input type="text" name="answer" onChange={this.handleChange}/>
           </label>
           <label>
-            Difficulty
+            Difficulty:{' '}
             <select name="difficulty" onChange={this.handleChange}>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -83,7 +108,7 @@ class FormView extends Component {
             </select>
           </label>
           <label>
-            Category
+            Category:{' '}
             <select name="category" onChange={this.handleChange}>
               {Object.keys(this.state.categories).map(id => {
                   return (
@@ -91,6 +116,15 @@ class FormView extends Component {
                   )
                 })}
             </select>
+          </label>
+          <input type="submit" className="button" value="Submit" />
+        </form>
+
+        <h2 style={{marginTop: '150px'}}>Add a New Category</h2>
+        <form className="form-view" id="add-category-form" onSubmit={this.submitCategory}>
+          <label>
+            Type:{' '}
+            <input type="text" name="type" onChange={this.handleChange}/>
           </label>
           <input type="submit" className="button" value="Submit" />
         </form>
