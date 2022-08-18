@@ -28,7 +28,6 @@ class FormView extends Component {
     })
   }
 
-
   submitQuestion = (event) => {
     event.preventDefault();
     $.ajax({
@@ -48,6 +47,7 @@ class FormView extends Component {
       crossDomain: true,
       success: (result) => {
         document.getElementById("add-question-form").reset();
+        this.props.history.push('/')
       },
       error: (error) => {
         alert('Unable to add question. Please try your request again')
