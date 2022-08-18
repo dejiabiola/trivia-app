@@ -1,3 +1,16 @@
+# Udacity Trivia API
+
+This trivia API is the second project in the Udacity fullstack nanodegree program. This project is a trivia application that allows users test their knowledge across a variety of topics (categories), by answering different questions. In addition, this project allows users to add a new category and new questions. The application's frontend is built with React and the backend is powered by Flask. The frontend and backend communicate using REST API. The full functionality of the API are:
+
+- Get all questions
+- Get question by categories
+- Search for questions
+- Create a new question
+- Play the quiz game, randomizing either all questions or randomizing within a specific category
+- Delete questions
+- Get all categories
+- Create a new category
+
 # Getting Started
 
 ### Backend Dependencies
