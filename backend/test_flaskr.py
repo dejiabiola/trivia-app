@@ -33,6 +33,28 @@ class TriviaTestCase(unittest.TestCase):
             "category": '1'
         }
 
+        self.general_quiz = {
+            'previous_questions': [],
+            'quiz_category': {
+                'id': 0,
+                'type': 'null'
+            },
+        }
+        self.specific_quiz = {
+            'previous_questions': [],
+            'quiz_category': {
+                'id': 2,
+                'type': 'Art'
+            },
+        }
+
+        self.invalid_quiz = {
+            'quiz_category': {
+                'id': 2,
+                'type': 'Art'
+            },
+        }
+
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -181,6 +203,35 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "unprocessable entity")
+
+    def test_play_quizzes_all_categories(self):
+        """Test that endpoint to play quizzes for all categories works correctly"""
+        response = self.client().post('/quizzes', json=self.general_quiz)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["question"])
+
+    def test_play_quizzes_specific_categories(self):
+        """Test that endpoint to play quizzes for specific category works correctly"""
+        response = self.client().post('/quizzes', json=self.specific_quiz)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["question"])
+        self.assertEqual(data["question"]["category"],
+                         str(self.specific_quiz["quiz_category"]["id"]))
+
+    def test_422_quizzes_error(self):
+        """Test that returns error when making a request to the quizzes endpoint with invalid parameters."""
+        response = self.client().post('/quizzes', json=self.invalid_quiz)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertTrue(data["message"], "unprocessable entity")
 
 
 # Make the tests conveniently executable
