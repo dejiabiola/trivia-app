@@ -19,6 +19,20 @@ class TriviaTestCase(unittest.TestCase):
             'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
+        self.new_question = {
+            "question": "How many bottles of wine would get an average cow drunk?",
+            "answer": "Two bottles",
+            "difficulty": 3,
+            "category": '1'
+        }
+
+        self.new_invalid_question = {
+            "question": None,
+            "answer": "Two bottles",
+            "difficulty": 3,
+            "category": '1'
+        }
+
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -117,6 +131,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(isinstance(data["questions"], list))
         self.assertEqual(data["total_questions"], 0)
         self.assertEqual(data["total_questions"], 0)
+
+    def test_create_question(self):
+        """Test that endpoint to create a question works correctly"""
+        response = self.client().post(
+            '/questions', json=self.new_question)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(len(data["questions"]))
+        self.assertTrue(isinstance(data["questions"], list))
+        self.assertTrue(data["total_questions"])
+        self.assertEqual(data["new_question"]["question"],
+                         self.new_question["question"])
+        self.assertEqual(data["new_question"]["answer"],
+                         self.new_question["answer"])
+        self.assertEqual(data["new_question"]["difficulty"],
+                         self.new_question["difficulty"])
+        self.assertEqual(data["new_question"]["category"],
+                         self.new_question["category"])
+
+    def test_400_bad_request_on_create_question(self):
+        """Test endpoint returns 400 error when creating a new question with incomplete request"""
+        response = self.client().post(
+            '/questions', json=self.new_invalid_question)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "unprocessable entity")
 
     def test_get_question_by_category(self):
         """Test that endpoint to get a question by category works correctly"""
