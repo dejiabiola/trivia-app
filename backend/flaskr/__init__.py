@@ -126,7 +126,6 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
-
     '''
   @TODO: 
   Create a POST endpoint to get questions based on a search term. 
@@ -140,7 +139,13 @@ def create_app(test_config=None):
     @app.route('/questions', methods=["POST"])
     def search_questions():
         body = request.get_json()
+
         search_term = body.get('searchTerm', None)
+        question = body.get('question', None)
+        answer = body.get('answer', None)
+        difficulty = body.get('difficulty', None)
+        category = body.get('category', None)
+
         try:
             if search_term is not None:
                 questions = Question.query.order_by(Question.id).filter(
@@ -155,6 +160,24 @@ def create_app(test_config=None):
                     "total_questions": len(questions),
                     "current_category": "",
                 })
+            else:
+                if None in [question, answer, difficulty, category]:
+                    abort(400)
+                    return
+                else:
+                    question = Question(
+                        question=question, answer=answer, difficulty=difficulty, category=category)
+                    question.insert()
+                    questions = Question.query.all()
+                    formatted_questions = paginate_questions(
+                        request, questions)
+                    return jsonify({
+                        "success": True,
+                        "new_question": question.format(),
+                        "questions": formatted_questions,
+                        "total_questions": len(questions)
+                    })
+
         except:
             abort(422)
 
@@ -181,7 +204,7 @@ def create_app(test_config=None):
                 "success": True,
                 "questions": formatted_questions,
                 "total_questions": len(formatted_questions),
-                "current_category": category.format()["type"]
+                "current_category": category_id
             })
         except:
             abort(422)
@@ -203,25 +226,36 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "bad request"
+        }), 400
+
+    @app.errorhandler(405)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 405,
+            "message": "method not allowed"
+        }), 405
+
     @app.errorhandler(404)
     def not_found(error):
-        return (
-            jsonify({
-                "success": False,
-                "error": 404,
-                "message": "resource not found"
-            }),
-            404,
-        )
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "resource not found"
+        }), 404
 
     @app.errorhandler(422)
     def unprocessable_entity(error):
-        return (
-            jsonify({
-                "success": False,
-                "error": 422,
-                "message": "unprocessable entity"
-            }),
-            422,
-        )
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "unprocessable entity"
+        }), 422
+
     return app
