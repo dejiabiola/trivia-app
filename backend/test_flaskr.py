@@ -108,17 +108,17 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "resource not found")
 
-    # def test_delete_question(self):
-    #     """Test that endpoint to delete a question works correctly"""
-    #     response = self.client().delete('/questions/9')
-    #     data = json.loads(response.data)
+    def test_delete_question(self):
+        """Test that endpoint to delete a question works correctly"""
+        response = self.client().delete('/questions/9')
+        data = json.loads(response.data)
 
-    #     question = Question.query.filter(Question.id == 9).one_or_none()
+        question = Question.query.filter(Question.id == 9).one_or_none()
 
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data["success"], True)
-    #     self.assertEqual(data["deleted"], 9)
-    #     self.assertEqual(question, None)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["deleted"], 9)
+        self.assertEqual(question, None)
 
     def test_422_if_question_does_not_exist(self):
         """Test that end point sends formatted message if question does not exist"""
