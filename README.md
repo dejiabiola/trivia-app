@@ -1,52 +1,268 @@
-# Full Stack API Final Project
+# Getting Started
 
+### Backend Dependencies
 
-## Full Stack Trivia
+- Python 3.10 (comes with pip), Install [Here](https://www.python.org/downloads/)
+- Setup virtual environment. Navigate to the backend directory in your terminal.
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  ```
+- Pip Dependencies, run `pip install -r requirements.txt` in your terminal
+- Database Setup
+  ```
+  dropdb trivia
+  createdb trivia
+  psql trivia < trivia.psql
+  ```
+- Go to backend folder and open your terminal and run the following
+  ```bash
+  export FLASK_APP=flaskr
+  export FLASK_DEBUG=True
+  flask run
+  ```
 
-Udacity is invested in creating bonding experiences for its employees and students. A bunch of team members got the idea to hold trivia on a regular basis and created a webpage to manage the trivia app and play the game, but their API experience is limited and still needs to be built out.
+### Frontend Dependencies
 
-That's where you come in! Help them finish the trivia app so they can start holding trivia and seeing who's the most knowledgeable of the bunch. The application must:
+Open a separate terminal, navigate to the frontend directory and run the following
 
-1. Display questions - both all questions and by category. Questions should show the question, category and difficulty rating by default and can show/hide the answer.
-2. Delete questions.
-3. Add questions and require that they include question and answer text.
-4. Search for questions based on a text query string.
-5. Play the quiz game, randomizing either all questions or within a specific category.
+- Ensure you have node installed `node -v`. If you don't follow the next step, else skip to the 3rd one.
+- Install Node and NPM from [https://nodejs.com/en/download](https://nodejs.org/en/download/).
+- Run `npm install` in your terminal.
+- Run `npm start`
 
-Completing this trivia app will give you the ability to structure plan, implement, and test an API - skills essential for enabling your future applications to communicate with others.
+# Testing
 
-## Starting and Submitting the Project
+To run the tests, open your terminal and run
 
-[Fork](https://help.github.com/en/articles/fork-a-repo) the [project repository](https://github.com/udacity/FSND/blob/master/projects/02_trivia_api/starter) and [Clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. Work on the project locally and make sure to push all your changes to the remote repository before submitting the link to your repository in the Classroom.
->Once you're ready, you can submit your project on the last page.
+```
+dropdb trivia_test
+createdb trivia_test
+psql trivia_test < trivia.psql
+python3 test_flaskr.py
+```
 
-## About the Stack
+# API Reference
 
-We started the full stack application for you. It is designed with some key functional areas:
+## Getting Started
 
-### Backend
-The [./backend](https://github.com/udacity/FSND/blob/master/projects/02_trivia_api/starter/backend/README.md) directory contains a partially completed Flask and SQLAlchemy server. You will work primarily in `__init__.py` to define your endpoints and can reference models.py for DB and SQLAlchemy setup. These are the files you'd want to edit in the backend:
+- Base URL: This app is locally hosted at `http://127.0.0.1:5000/`.
+- Authentication: This version of the application does not require authentication or API keys.
 
-1. *./backend/flaskr/`__init__.py`*
-2. *./backend/test_flaskr.py*
+## Error Handling
 
+Errors are returned as JSON objects in the following format:
 
-### Frontend
+- Sample: curl http://127.0.0.1:5000/nonsense
 
-The [./frontend](https://github.com/udacity/FSND/blob/master/projects/02_trivia_api/starter/frontend/README.md) directory contains a complete React frontend to consume the data from the Flask server. If you have prior experience building a frontend application, you should feel free to edit the endpoints as you see fit for the backend you design. If you do not have prior experience building a frontend application, you should read through the frontend code before starting and make notes regarding:
+```
+{
+  "success": False,
+  "error": 422,
+  "message": "unprocessable entity"
+}
+```
 
-1. What are the end points and HTTP methods the frontend is expecting to consume?
-2. How are the requests from the frontend formatted? Are they expecting certain parameters or payloads? 
+The API will return four error types when requests fail:
 
-Pay special attention to what data the frontend is expecting from each API response to help guide how you format your API. The places where you may change the frontend behavior, and where you should be looking for the above information, are marked with `TODO`. These are the files you'd want to edit in the frontend:
+- 400: Bad Request
+- 404: Resource Not Found
+- 405: Method not allowed
+- 422: Not Processable
 
-1. *./frontend/src/components/QuestionView.js*
-2. *./frontend/src/components/FormView.js*
-3. *./frontend/src/components/QuizView.js*
+## Endpoints
 
+### GET /questions
 
-By making notes ahead of time, you will practice the core skill of being able to read and understand code and will have a simple plan to follow to build out the endpoints of your backend API. 
+- **General**:
+  - Returns lists of question objects and categories, success value, and total number of questions
+  - Results are paginated in groups of 10, include a request argument to choose page number, starting from 1 (Which is also a default value)
+- **Sample**: `curl http://127.0.0.1:5000/questions`
+  <br>
+  ```
+  {
+      "success": True,
+      "questions" : [
+          {
+              "question": "What year did the first world war end",
+              "answer": "1918",
+              "category": "History",
+              "difficulty": 3
+          },
+          {
+              "question": "Obama was the ___ president of the United States",
+              "answer": "44th",
+              "category": "History",
+              "difficulty": 3
+          },  .....
+      ],
+      "categories": {
+          "Science": 1,
+          "Art": 5,
+          "Geography": 2,
+          "History": 1,
+          "Entertainment": 9,
+          "Sports": 5
+        },
+      "total_questions": 10
+  }
+  ```
 
+### POST /questions
 
+- **General**:
+  - Creates a new question using the submitted question value, answer, difficulty, and category.
+  - Returns success value, questions list paginated based on the page number, the inserted question, and total number of questions
+- **Sample**: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"Best city in the UK?", "answer":"Glasgow", "difficulty":1, "category":1}'`
 
->View the [README within ./frontend for more details.](./frontend/README.md)
+```
+  {
+    "success": True,
+    "questions" : [
+            {
+                "question": "Best city in the UK?",
+                "answer": "Glasgow",
+                "category": 1,
+                "difficulty": 1
+            },
+            {
+                "question": "What year did the first world war end",
+                "answer": "1918",
+                "category": "History",
+                "difficulty": 3
+            },
+            {
+                "question": "Obama was the ___ president of the United States",
+                "answer": "44th",
+                "category": "History",
+                "difficulty": 3
+            },  .....
+        ],
+    "new_question": {
+            "question": "Best city in the UK?",
+            "answer": "Glasgow",
+            "category": 1,
+            "difficulty": 1
+        },
+    "total_questions": 11
+  }
+```
+
+### DELETE /questions
+
+- **General**:
+  - Deleted the question with the given ID if exists
+  - Returns success value and the deleted question id
+- **Sample**: `curl -X DELETE http://127.0.0.1:5000/questions/2`
+
+```
+    {
+        "success": True,
+        "deleted": 2,
+    }
+```
+
+### POST /questions/search
+
+- **General**:
+  - search for questions that contain the given search term
+  - Returns success value, number of total questions,current category, and questions list that contains the given search term.
+- **Sample**: `curl http://127.0.0.1:5000/questions/search -X POST -H "Content-Type: application/json" -d '{"searchTerm":"Obama"}'`
+
+```
+    {
+        "success":True,
+        "questions":[
+            {
+                "question": "Obama was the ___ president of the United States",
+                "answer": "44th",
+                "category": "History",
+                "difficulty": 3
+            }
+        ],
+        "total_questions": 1
+    }
+```
+
+### GET /categories/1/questions
+
+- **General**: - Gets list of questions based on the submitted category. - Returns success value, total number of questions, current category, and list of the retrieved questions within this category - The questions are paginated based on the current page number
+- **Sample**: `curl http://127.0.0.1:5000/categories/4/questions`
+
+```
+    {
+        "success": True,
+        "questions":[
+            {
+                "question": "What was the first animated Disney film?",
+                "answer": "Snow White and the Seven Dwarfs",
+                "category": "Entertainment",
+                "difficulty": 2
+            },
+            {
+                "question": "What is the name of Billie Eilish's debut album?",
+                "answer": "When We All Fall Asleep, Where Do We Go?",
+                "category": "Entertainment",
+                "difficulty": 4
+            }
+        ],
+        "total_questions": 2,
+        "current_category": "Entertainment"
+    }
+```
+
+### GET /quizzes
+
+- **General**:
+  - Returns a random question within the submitted category which is not in the submitted list of previous questions
+- **Sample**: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"quiz_category":"Entertainment", "previous_questions":[]}'`
+
+```
+    {
+        "success": True,
+        "question":{
+            "question": "Who plays Tommy Shelby in Peaky Blinders?",
+            "answer": "Cillian Murphy",
+            "category": "Entertainment",
+            "difficulty": 2
+        }
+    }
+```
+
+### GET /categories
+
+- **General**:
+  - Returns a categories object, success value, and total number of categories
+- **Sample**: `curl http://127.0.0.1:5000/categories`
+
+```
+    {
+        "success": True,
+        "categories": {
+          "Science": 1,
+          "Art": 5,
+          "Geography": 2,
+          "History": 1,
+          "Entertainment": 9,
+          "Sports": 5
+        },
+        total_categories: 23
+    }
+```
+
+### POST /categories
+
+- **General**:
+  - Creates a new category using the submitted category type.
+  - Returns success value and the new category object.
+- **Sample**: `curl http://127.0.0.1:5000/categories -X POST -H "Content-Type: application/json" -d '{"type": "Technology"}'`
+
+```
+  {
+    "success": True,
+    "category": {
+        "id": 5,
+        "type": "Technology"
+    }
+  }
+```
