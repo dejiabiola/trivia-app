@@ -233,6 +233,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertTrue(data["message"], "unprocessable entity")
 
+    def test_create_category(self):
+        """Test that endpoint to create category works correctly"""
+        response = self.client().post(
+            '/categories', json={"type": "Metaverse"})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["category"])
+        self.assertEqual(data["category"], "Metaverse")
+
+    def test_422_quizzes_error(self):
+        """Test that returns error when making a request to the categories endpoint with invalid parameters."""
+        response = self.client().post('/categories')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertTrue(data["message"], "unprocessable entity")
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
