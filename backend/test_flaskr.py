@@ -242,7 +242,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertTrue(data["category"])
-        self.assertEqual(data["category"], "Metaverse")
+        self.assertEqual(data["category"]["type"], "Metaverse")
 
     def test_422_quizzes_error(self):
         """Test that returns error when making a request to the categories endpoint with invalid parameters."""
