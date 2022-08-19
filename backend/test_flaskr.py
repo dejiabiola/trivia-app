@@ -23,14 +23,14 @@ class TriviaTestCase(unittest.TestCase):
             "question": "How many bottles of wine would get an average cow drunk?",
             "answer": "Two bottles",
             "difficulty": 3,
-            "category": '1'
+            "category": 1
         }
 
         self.new_invalid_question = {
             "question": None,
             "answer": "Two bottles",
             "difficulty": 3,
-            "category": '1'
+            "category": 1
         }
 
         self.general_quiz = {
@@ -222,7 +222,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], True)
         self.assertTrue(data["question"])
         self.assertEqual(data["question"]["category"],
-                         str(self.specific_quiz["quiz_category"]["id"]))
+                         self.specific_quiz["quiz_category"]["id"])
 
     def test_422_quizzes_error(self):
         """Test that returns error when making a request to the quizzes endpoint with invalid parameters."""
@@ -244,14 +244,23 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["category"])
         self.assertEqual(data["category"]["type"], "Metaverse")
 
-    def test_422_quizzes_error(self):
-        """Test that returns error when making a request to the categories endpoint with invalid parameters."""
+    def test_422_create_category_error(self):
+        """Test that returns error when making a post request to the categories endpoint with invalid parameters."""
         response = self.client().post('/categories')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data["success"], False)
         self.assertTrue(data["message"], "unprocessable entity")
+
+    def test_404_invalid_endpoint(self):
+        """Test that app returns 404 when endpoint is invalid"""
+        response = self.client().post('/invalid')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found")
 
 
 # Make the tests conveniently executable
