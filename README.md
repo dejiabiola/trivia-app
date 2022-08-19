@@ -121,7 +121,7 @@ The API will return four error types when requests fail:
   }
   ```
 
-### POST /questions
+### POST /questions/create
 
 - **General**:
   - Creates a new question using the submitted question value, answer, difficulty, and category.
