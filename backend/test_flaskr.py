@@ -104,9 +104,9 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client().get('/questions?page=10000')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "resource not found")
+        self.assertEqual(data["message"], "unprocessable entity")
 
     def test_delete_question(self):
         """Test that endpoint to delete a question works correctly"""
@@ -132,7 +132,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_search_question(self):
         """Test that endpoint to search a question works correctly"""
         response = self.client().post(
-            '/questions', json={"searchTerm": "largest"})
+            '/questions/search', json={"searchTerm": "largest"})
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -144,7 +144,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_search_question_with_unknown_value(self):
         """Test that endpoint to search a question works correctly if value is unknown"""
         response = self.client().post(
-            '/questions', json={"searchTerm": "sakdhfkasdflkhsdfasf"})
+            '/questions/search', json={"searchTerm": "sakdhfkasdflkhsdfasf"})
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -157,7 +157,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_create_question(self):
         """Test that endpoint to create a question works correctly"""
         response = self.client().post(
-            '/questions', json=self.new_question)
+            '/questions/create', json=self.new_question)
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -177,7 +177,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_400_bad_request_on_create_question(self):
         """Test endpoint returns 400 error when creating a new question with incomplete request"""
         response = self.client().post(
-            '/questions', json=self.new_invalid_question)
+            '/questions/create', json=self.new_invalid_question)
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 422)
